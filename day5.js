@@ -17,11 +17,9 @@ let verify = (string) =>{
     if (i != 0 && item == string_to_list[i-1]){
       twice += 1;
     };
-    item.includes('a') ? count += 1 : count += 0
-    item.includes('e') ? count += 1 : count += 0
-    item.includes('i') ? count += 1 : count += 0
-    item.includes('o') ? count += 1 : count += 0
-    item.includes('u') ? count += 1 : count += 0
+    if (item == 'a' || item == 'e' || item == 'i' ||item == 'o'||item == 'u'){
+      count += 1;
+    }
   });
   return (count>=3 && twice>=1 && illegal == 0);
 };
