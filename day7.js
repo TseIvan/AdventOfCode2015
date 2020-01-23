@@ -37,7 +37,7 @@ res.forEach((item, i) => {
   queue.push(item)
   let [first,second,third]=item.match(/[(\d)||(a-z)]{1,9}/g)
 });
-let part_b_queue = Object.assign([], queue);
+let part_b_queue = Object.assign([], queue); // Deepcopy queue so we dont have to read input again
 
 // A gate provides no signal until all of its inputs have a signal.
 function run(queue,p2,val){
@@ -51,32 +51,13 @@ function run(queue,p2,val){
       }else if (item.includes('OR')){
         (first in wireDict && second in wireDict) ? wireDict[third] = bitwiseOR(wireDict[first],wireDict[second]) : queue.push(item);
       }else if (item.includes('AND')){
-        if (first in wireDict && second in wireDict){
-          wireDict[third] = bitwiseAND(wireDict[first],wireDict[second]);
-        }else if (isInt(first) && second in wireDict){
-          wireDict[third] = bitwiseAND(parseInt(first),wireDict[second]);
-        }else{
-          queue.push(item);
-        }
+        (first in wireDict && second in wireDict) ? ( wireDict[third] = bitwiseAND(wireDict[first],wireDict[second])) : ((isInt(first) && second in wireDict) ? (wireDict[third] = bitwiseAND(parseInt(first),wireDict[second])) : (queue.push(item)));
       }else if (item.includes('NOT')){
-        if (first in wireDict){
-          wireDict[second] = bitwiseNOT(wireDict[first]);
-        }else{
-          queue.push(item);
-        }
+        (first in wireDict) ? wireDict[second] = bitwiseNOT(wireDict[first]) : queue.push(item);
       }else{
-        if (second == 'b' && p2 == true){
-          wireDict[second] = val;
-        }
-        else if (isInt(first)){
-          wireDict[second] = parseInt(first);
-        }else if (first in wireDict){
-          wireDict[second] = wireDict[first];
-        }else{
-          queue.push(item);
-        }
+        (second == 'b' && p2 == true) ? (wireDict[second] = val) : ((isInt(first)) ? (wireDict[second] = parseInt(first)) : ((first in wireDict) ? (wireDict[second] = wireDict[first]) : (queue.push(item))));
       }
-  };
+  }
 }
 run(queue,false,0);
 val = wireDict['a'];
