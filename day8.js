@@ -5,3 +5,6 @@ res.forEach((item, i) => {
   total += item.length-1 - eval(item).length
 });
 console.log(total+1)
+// 6789 total characters
+// eval finds length making "\x27" -> '
+// newline - 1
