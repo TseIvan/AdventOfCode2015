@@ -11,6 +11,26 @@
 //
 // What is the sum of all numbers in the document?
 
-// plan typeof list -> sum[...arr] dict -> continue looping until value typeof int -> add together.
 
-// Next level regex to findall \d then add together??
+const fs = require('fs')
+var res = fs.readFileSync("day12.txt", 'utf8').trim() // String does not contain any linebreaks
+
+res = JSON.parse(res)
+// https://stackoverflow.com/a/49042916
+const flatten = (obj, path = '') => {
+    if (!(obj instanceof Object)) return {[path.replace(/\.$/g, '')]:obj};
+
+    return Object.keys(obj).reduce((output, key) => {
+        return obj instanceof Array ?
+             {...output, ...flatten(obj[key], path +  '[' + key + '].')}:
+             {...output, ...flatten(obj[key], path + key + '.')};
+    }, {});
+}
+let total = 0
+Object.values(flatten(res)).forEach((item, i) => {
+  if (Number.isInteger(item)){
+    total += item;
+  }
+});
+console.log(total)
+// Have to write own parser to ignore red instead of flattening it rip
