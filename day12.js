@@ -12,11 +12,13 @@
 // What is the sum of all numbers in the document?
 
 
+// https://stackoverflow.com/a/49042916
+
+
 const fs = require('fs')
 var res = fs.readFileSync("day12.txt", 'utf8').trim() // String does not contain any linebreaks
-
 res = JSON.parse(res)
-// https://stackoverflow.com/a/49042916
+
 const flatten = (obj, path = '') => {
     if (!(obj instanceof Object)) return {[path.replace(/\.$/g, '')]:obj};
 
@@ -33,4 +35,23 @@ Object.values(flatten(res)).forEach((item, i) => {
   }
 });
 console.log(total)
-// Have to write own parser to ignore red instead of flattening it rip
+
+function count(obj){
+  if (Array.isArray(obj) == false){
+    for (key in obj){
+      if (obj[key] === 'red'){
+        return 0; // key is red ignore this
+      }
+    }
+  }
+  let total = 0;
+  for (key in obj){
+    if (typeof obj[key] === 'object'){
+      total += count(obj[key])
+    }else if (Number.isInteger(obj[key])){
+      total += obj[key]
+    }
+  }
+  return total;
+}
+console.log(count(res));
