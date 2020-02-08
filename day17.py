@@ -16,5 +16,5 @@ def run(f1='day17.txt'):
                         equal_to_150 = 1
                     elif (l == min_container):
                         equal_to_150 += 1
-    print(equal_to_150) # 1304 #15
+    print(equal_to_150) # 1304 #18
 run()
