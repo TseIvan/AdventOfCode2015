@@ -1,4 +1,5 @@
 import itertools
+import copy
 # Cost Damage Armor
 weapon_shop={
 "Dagger"        : [8,     4,       0],
@@ -9,6 +10,7 @@ weapon_shop={
 }
 
 armor_shop={
+    "None"      : [0,    0,         0],
     "Leather"      : [13,    0,       1],
     "Chainmail"    : [31,     0,      2],
     "Splintmail"   : [53,    0,       3],
@@ -17,6 +19,7 @@ armor_shop={
 }
 
 ring_shop={
+    "None"      : [0,    0,       0],
     "Damage +1"   : [25,     1,       0],
     "Damage +2"   : [50,    2,       0],
     "Damage +3"   : [100,     3,       0],
@@ -31,9 +34,6 @@ class Character:
         self.armor = armor
         self.damage = damage
         self.cost = cost
-
-    def getCost(self):
-        return self.cost
 
     def takeDamage(self,damage):
         self.health -= (damage-self.armor)
@@ -50,20 +50,25 @@ def runSimulation(player,boss):
         if (player.fatal()): return False
 
 def play():
-    wep_iter = itertools.combinations(weapon_shop.keys(),1) # no dupes
-    armor_iter = itertools.combinations(armor_shop.keys(),1) # no dupes
-    ring_iter_1 = itertools.combinations(ring_shop.keys(),1) # no duplicates
-    ring_iter_2 = itertools.combinations(ring_shop.keys(),2) # need to clean duplicates
 
-    # print(*wep_iter)
-    # [print(_) for _ in list(ring_iter_2)]
+    minCost = 10**6
+    maxCost = -1
+    for weapon in weapon_shop.keys():
+        for armor in armor_shop.keys():
+            for ring in itertools.combinations(ring_shop.keys(),2):
+                #Cost Damage Armor
+                cost = weapon_shop[weapon][0] + armor_shop[armor][0] + ring_shop[ring[0]][0] + ring_shop[ring[1]][0]
+                dmg = weapon_shop[weapon][1] + armor_shop[armor][1] + ring_shop[ring[0]][1] + ring_shop[ring[1]][1]
+                arm = weapon_shop[weapon][2] + armor_shop[armor][2] + ring_shop[ring[0]][2] + ring_shop[ring[1]][2]
+                player = Character(100,arm,dmg,cost)
+                boss = Character(104,1,8,0)
+                if (runSimulation(copy.deepcopy(player),copy.deepcopy(boss)) and (player.cost < minCost)):
+                    minCost = player.cost
+                if (not runSimulation(copy.deepcopy(player),copy.deepcopy(boss)) and (player.cost >= maxCost)):
+                    maxCost = player.cost
 
-    # Can only be wep + ring, wep + ring 2, wep + armor + ring, wep + armor + ring2, wep + armor.
-    # Need to run combination on each *iter then columnwise summation create character then run simulation, if success append player.cost into list.
-    # Finally, run  arr.reduce( x,y => (x<y) ? (x) : (y))
-    
-
-
+    print(minCost)
+    print(maxCost)
     return
 
 play()
