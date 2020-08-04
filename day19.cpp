@@ -20,11 +20,28 @@ void partOne(multimap<string,string>& replacements, string& original_molecule) {
       }
     }
   }
-
   cout << unique.size() << endl;
-  // for (auto um: unique) {
-  //   cout << um << endl;
-  // }
+}
+
+void partTwo(multimap<string,string>& inverted_replacements, string& original_molecule) {
+  int steps = 0;
+  string target = "e";
+  string molecule = original_molecule;
+  while (molecule != target) {
+    for(auto it = inverted_replacements.begin(); it != inverted_replacements.end(); ++it) {
+      auto pos = molecule.find(it->first, 0);
+      if (pos != string::npos) {
+          molecule.replace(pos, it->first.size(), it->second);
+          steps++;
+      }
+    }
+
+    if (steps > 50000) {
+      cout << "Requires multimap to be shuffled, current order applied greedily does not work" << endl;
+      break;
+    }
+  }
+  cout << steps << endl;
 }
 
 int main()  {
@@ -32,16 +49,19 @@ int main()  {
 	string line, molecule;
 	regex re("(.*) => (.*)");
 	smatch match;
-  multimap<string,string> replacements;
+  multimap<string,string> replacements, inverted_replacements;
 
   while (getline(infile, line)) {
     if (regex_search(line, match, re)) {
       replacements.insert(pair<string,string>(match[1], match[2]));
+      inverted_replacements.insert(pair<string,string>(match[2], match[1]));
     } else if (line.length() > 1) {
       molecule = line;
     }
   }
+
   partOne(replacements, molecule);
+  partTwo(inverted_replacements, molecule);
   return 0;
 }
 
